@@ -1,10 +1,49 @@
-import numpy as np
-import pandas as pd
 
 from dataclasses import dataclass, field
 from itertools import combinations
 from pathlib import Path
 import math
+
+import numpy as np
+import pandas as pd
+
+SESSION_TIMES = ["09:00", "13:00", "16:00"]
+WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"]
+
+
+@dataclass
+class Instance:
+    exam_ids: list            # course_id of each exam (index e = 0..n-1)
+    exam_names: list
+    size: np.ndarray          # students enrolled in each exam
+    conflict: np.ndarray      # conflict[i, j] = students taking both exam i and exam j
+    room_ids: list
+    room_cap: np.ndarray
+    n_days: int
+    sessions_per_day: int = 3
+    students: dict = field(default_factory=dict)  # exam index -> set of student ids
+
+    @property
+    def n_exams(self):
+        return len(self.exam_ids)
+
+    @property
+    def n_rooms(self):
+        return len(self.room_ids)
+
+    @property
+    def n_periods(self):
+        return self.n_days * self.sessions_per_day
+
+    def period_label(self, p):
+        d, s = divmod(p, self.sessions_per_day)
+        return f"Week {d // 5 + 1} {WEEKDAYS[d % 5]} {SESSION_TIMES[s]}"
+
+    def conflict_pairs(self):
+        """(i, j, shared_students) for every pair of exams that share at least one student."""
+        return [(i, j, int(self.conflict[i, j]))
+                for i, j in combinations(range(self.n_exams), 2) if self.conflict[i, j] > 0]
+
 
 def load_instance(data_dir="data", n_exams=None, n_days=None, sessions_per_day=3):
     """Build an instance. n_exams keeps the first k courses (used for the scalability study);
