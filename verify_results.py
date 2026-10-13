@@ -57,3 +57,4 @@ for f in sorted(Path("results").glob("timetable_*.csv")):
     print(f"{f.name}: {'FEASIBLE' if not problems else problems} | proximity {proximity} | "
           f"rooms {rooms_used} | total {proximity + W_ROOM * rooms_used}")
 
+
