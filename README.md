@@ -21,6 +21,7 @@
 
 **Methods.** Exact: Constraint Programming with **OR-Tools CP-SAT**. Heuristic: **Genetic Algorithm** with **DEAP**.
 
+## Data.py
 
 Dataset
 * schedule.csv   -> (student_id, course_id) enrolments. One exam per course.

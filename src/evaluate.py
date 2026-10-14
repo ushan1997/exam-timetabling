@@ -1,9 +1,16 @@
+#This file (evaluate.py) is the scoring / checker — 
+# it looks at a finished timetable and says 
+# how good or bad it is. Both the CP-SAT solver 
+# and the GA produce a timetable,
+# and this file judges them the same way. 
+
 from collections import defaultdict
 
 W_B2B = 3
 W_SAMEDAY = 1
 W_ROOM = 10
 
+# how bad is it that exams i and j are at periods pᵢ and pⱼ?
 
 def pair_penalty(inst, p_i, p_j):
     """Proximity weight (per shared student) for two exams placed in periods p_i and p_j."""
@@ -12,6 +19,8 @@ def pair_penalty(inst, p_i, p_j):
         return 0
     return W_B2B if abs(p_i - p_j) == 1 else W_SAMEDAY
 
+#check the timetable
+# Takes period (list: exam → period) and rooms (list: exam → list of rooms).
 
 def evaluate(inst, period, rooms):
     # H1: student clashes, counted per student
