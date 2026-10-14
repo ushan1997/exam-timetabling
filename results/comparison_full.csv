@@ -1,3 +1,3 @@
 method,best,mean,std,best proximity,rooms,gap to CP bound %,runtime_s,feasible,optimality proof
-CP-SAT,3095.0,3095.0,0.0,865,223,3.0,120.1,True,False
-GA (10 runs),3090.0,3142.3,56.8,860,223,2.85,17.6,True,False
+CP-SAT,3099.0,3099.0,0.0,869,223,3.13,120.0,True,False
+GA (10 runs),3090.0,3142.3,56.8,860,223,2.85,16.3,True,False

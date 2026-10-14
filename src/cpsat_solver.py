@@ -1,3 +1,25 @@
+"""Exact method: Constraint Programming with OR-Tools CP-SAT (0-1 / ILP-style model).
+
+Sets: exams E, periods P (= days D x sessions S), rooms R.  s_ij = students shared by exams i, j.
+
+Decision variables
+  x[e,p]    in {0,1}   exam e is held in period p
+  z[e,d]    in {0,1}   exam e is held on day d          (z[e,d] = sum_s x[e, dS+s])
+  y[e,r]    in {0,1}   room r is used for exam e
+  sd[i,j]   in {0,1}   exams i, j are on the same day            (only for s_ij > 0)
+  adj[i,j]  in {0,1}   exams i, j are in consecutive sessions    (only for s_ij > 0)
+
+Constraints
+  (C1) sum_p x[e,p] = 1                                  each exam scheduled exactly once
+  (H1) x[i,p] + x[j,p] <= 1                for s_ij > 0  no student sits two exams at once
+  (H2) x[i,p] + x[j,p] + y[i,r] + y[j,r] <= 3  for s_ij = 0  exams sharing a period don't share a room
+  (H3) sum_r cap_r * y[e,r] >= size_e                    enough seats
+  (L1) z[i,d] + z[j,d] - 1 <= sd[i,j]                    same day  -> sd = 1
+  (L2) x[i,p] + x[j,p+1] - 1 <= adj[i,j]  (and i<->j)    back-to-back on the same day -> adj = 1
+
+Objective (identical to evaluate.py)
+  min  sum_{i<j} s_ij * (W_SAMEDAY * sd[i,j] + (W_B2B - W_SAMEDAY) * adj[i,j])  +  W_ROOM * sum y
+"""
 import time
 from itertools import combinations
 
