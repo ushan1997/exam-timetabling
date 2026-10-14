@@ -1,16 +1,3 @@
-"""Heuristic method: Genetic Algorithm with DEAP.
-
-Encoding : a permutation of the P period indices; exam e is placed in period ind[e].
-           Every exam therefore gets its own period, so student clashes (H1) can never occur.
-           This fits the data: every pair of courses shares students, so no two exams could
-           share a period anyway.
-Decoding : rooms are assigned greedily per period - largest free rooms first until the
-           exam's students are seated. This uses the fewest rooms for that exam.
-Fitness  : evaluate.py's total (proximity + W_ROOM * rooms), plus a big penalty for any
-           hard-constraint violation (never triggered with this encoding, kept as a guard).
-Operators: ordered crossover (cxOrdered), swap mutation (mutShuffleIndexes),
-           tournament selection (k=3), elitism via HallOfFame.
-"""
 import random
 import time
 
