@@ -1,3 +1,7 @@
+#This file (cpsat_solver.py) is the exact solver — 
+# it uses Google OR-Tools' CP-SAT to find the mathematically
+# best timetable possible (given the time limit). 
+
 import time
 from itertools import combinations
 
@@ -14,6 +18,7 @@ class SolutionTrace(cp_model.CpSolverSolutionCallback):
     def on_solution_callback(self):
         self.points.append((self.WallTime(), self.ObjectiveValue()))
 
+#This function uses a mathematical fact to say: "if you have n exams spread over days days, the absolute minimum number of same-day pairs and back-to-back pairs is at least X." It's used later to tighten the model so CP-SAT finds good solutions faster.
 
 def min_same_day_pairs(n, days, S):
     """Fewest same-day pairs (and back-to-back pairs) possible when every exam needs its own
@@ -24,6 +29,10 @@ def min_same_day_pairs(n, days, S):
     return (sum(k * (k - 1) // 2 for k in loads),
             sum(max(0, 2 * k - S - 1) for k in loads))
 
+#   This is the main function that sets up the CP-SAT model and solves it. 
+# It defines the decision variables, adds constraints, 
+# and specifies the objective function.
+# It also handles the solver parameters and returns the results.
 
 def solve_cpsat(inst, time_limit=60, workers=8, seed=0, log=False):
     m = cp_model.CpModel()

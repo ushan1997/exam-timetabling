@@ -1,3 +1,7 @@
+# This file (ga_solver.py) is the heuristic solver — 
+# it uses DEAP's Genetic Algorithm to evolve a good timetable. Instead of proving optimality like CP-SAT, 
+# it just tries to get "good enough" fast.
+
 import random
 import time
 
@@ -8,12 +12,18 @@ from evaluate import W_B2B, W_ROOM, W_SAMEDAY, evaluate
 
 BIG_M = 100_000
 
+#FitnessMin — a fitness type that's minimized (weight -1.0; that's why DEAP knows smaller = better).
 if not hasattr(creator, "FitnessMin"):
     creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
+    #Individual — a list with a fitness attached.
 if not hasattr(creator, "Individual"):
     creator.create("Individual", list, fitness=creator.FitnessMin)
 
-
+# The GA's individual only says when each exam is. decode figures out where — by a greedy room assignment:
+#  For each period:
+# Take all exams in that period.
+#Sort exams by biggest first (they need the largest rooms).
+#For each exam, take rooms largest-first until total seats ≥ students needed.
 def decode(inst, ind):
     period = list(ind[: inst.n_exams])
     rooms = [[] for _ in range(inst.n_exams)]
@@ -32,6 +42,7 @@ def decode(inst, ind):
     return period, rooms
 
 
+# The GA evaluates thousands of individuals, so we use NumPy matrix math instead of the Python loops in evaluate.py. It computes the same score, just fast.
 def fitness(inst, ind):
     """Vectorised version of evaluate.py's objective (same numbers, much faster).
     The final best individual is re-checked with evaluate.py in solve_ga."""
@@ -48,7 +59,7 @@ def fitness(inst, ind):
     rooms_used = sum(len(r) for r in rooms)
     return (float(proximity + W_ROOM * rooms_used + BIG_M * (clashes + shortfall)),)
 
-
+# This is the main function that sets up the GA and runs it. It defines the population, selection, crossover, mutation, and evaluation functions, and then runs the GA for a specified number of generations. It returns the best solution found along with its objective value and other relevant information.
 def solve_ga(inst, pop_size=100, n_gen=300, cxpb=0.8, mutpb=0.3, indpb=0.05, seed=0):
     random.seed(seed)
     np.random.seed(seed)
