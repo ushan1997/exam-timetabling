@@ -1,4 +1,3 @@
-
 from dataclasses import dataclass, field
 from itertools import combinations
 from pathlib import Path
