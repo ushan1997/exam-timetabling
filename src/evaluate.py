@@ -1,19 +1,3 @@
-"""Shared objective + feasibility check, used by BOTH solvers so their results are comparable.
-
-A solution is: period[e] (int) and rooms[e] (list of room indices) for every exam e.
-
-Hard constraints (must be 0 for a feasible timetable)
-  H1 student clash   : a student has two exams in the same period
-  H2 room clash      : a room is used by two exams in the same period
-  H3 capacity        : seats in the rooms given to an exam < students enrolled
-
-Soft objective (minimise)
-  proximity = sum over exam pairs (i, j) sharing s_ij students that sit on the same day:
-                 W_B2B     * s_ij   if they are in consecutive sessions (back-to-back)
-                 W_SAMEDAY * s_ij   otherwise (same day, with a gap)
-  rooms_used = total rooms opened (each room needs an invigilator)
-  total = proximity + W_ROOM * rooms_used
-"""
 from collections import defaultdict
 
 W_B2B = 3
